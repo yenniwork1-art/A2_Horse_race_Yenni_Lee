@@ -12,30 +12,28 @@ finish_point = Win_h - 80
 
 #make a horse class
 class Horse:
-    def __init__(self, speed, y, image, window):
+    def __init__(self, speed, y, window, image):
         self.x_pos = 0
         self.y_pos = y
         self.window = window
         self.image = image
         self.dice = Dice(speed)
-
-    def draw(self):
-        try:
-            self.image.draw(self.window)
-        except:
-            pass
+        self.drawn = False
 
     def move(self):
-        steps = self.dice.roll()
-        self.x_pos += steps
-        self.image.move(steps, 0)
+        step = self.dice.roll()
+        self.x_pos += step
+        if self.drawn:
+            self.image.move(step,0)
+        return step
 
+    def draw(self):
+        if not self.drawn:
+            self.image.draw_at_pos(self.window, self.x_pos, self.y_pos)
+            self.drawn = True
 
-    def crossed_finish_line(self, finish_x):
-        return self.x_pos >= finish_x
-
-    def change_lane(self, new_y):
-        self.y_pos = new_y
+    def crossed_finish_line (self,finish_point):
+        return self.x_pos >= finish_point
 
 def draw_finish_line(win, finish_x):
     line = Line(Point(finish_x, 0), Point(finish_x, Win_v))
@@ -47,23 +45,31 @@ def main():
     win = GraphWin("Horse race", Win_h, Win_v)
     win.setBackground("lightyellow")
 
+#input the image
     img1 = Image(Point(start_point, horse_1), "Cat_Meow.gif")
     img2 = Image(Point(start_point, horse_2), "hamster.gif")
     horse1 = Horse(speed=8, y=horse_1, image=img1, window=win)
     horse2 = Horse(speed=8, y=horse_2, image=img2, window=win)
 
+#before start
     title = Text(Point(Win_h // 2, 30), "Are you ready to race?!")
     title.setSize(14)
     title.draw(win)
-
-    draw_finish_line(win, finish_point)
+    draw_finish_line (win, finish_point)
     horse1.draw()
     horse2.draw()
     win.getMouse()
 
+#start race
     while True:
         horse1.move()
         horse2.move()
+
+        win.setBackground("lightyellow")
+        draw_finish_line (win, finish_point)
+
+        horse1.draw()
+        horse2.draw()
 
         h1 = horse1.crossed_finish_line(finish_point)
         h2 = horse2.crossed_finish_line(finish_point)
@@ -82,11 +88,7 @@ def main():
 
             break
 
-        update(10)
-
-    exit_text = Text(Point(Win_h // 2, Win_v - 20), "Click on the horse to exit")
-    exit_text.setSize(12)
-    exit_text.draw(win)
+        update(10) #adjust speed
 
     win.getMouse()
     win.close()
