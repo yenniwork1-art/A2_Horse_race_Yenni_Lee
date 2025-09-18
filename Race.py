@@ -3,7 +3,7 @@
 from graphics import *
 from Dice import Dice
 
-#set up the pre-request
+#set up
 Win_h, Win_v = 700, 350
 start_point = 20
 horse_1 = 120
@@ -13,29 +13,32 @@ finish_point = Win_h - 80
 #make a horse class
 class Horse:
     def __init__(self, speed, y, image, window):
-        self.x_pos = start_point
+        self.x_pos = 0
         self.y_pos = y
         self.window = window
         self.image = image
         self.dice = Dice(speed)
 
     def draw(self):
-        self.image.draw(self.window)
+        try:
+            self.image.draw(self.window)
+        except:
+            pass
 
     def move(self):
         steps = self.dice.roll()
         self.x_pos += steps
-        self.image.move(steps, 0)
+        try:
+            self.image.move(steps, 0)
+        except:
+            pass
         return steps
 
     def crossed_finish_line(self, finish_x):
         return self.x_pos >= finish_x
 
     def change_lane(self, new_y):
-        new_position = new_y - self.y_pos
         self.y_pos = new_y
-        if self.image.canvas is not None:
-            self.image.move(0,new_position)
 
 def draw_finish_line(win, finish_x):
     line = Line(Point(finish_x, 0), Point(finish_x, Win_v))
@@ -61,7 +64,6 @@ def main():
     horse2.draw()
     win.getMouse()
 
-#start a race
     while True:
         horse1.move()
         horse2.move()
@@ -83,7 +85,7 @@ def main():
 
             break
 
-        update(10) #controls the frame per second
+        update(10)
 
     exit_text = Text(Point(Win_h // 2, Win_v - 20), "Click on the horse to exit")
     exit_text.setSize(12)
