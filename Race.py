@@ -28,11 +28,8 @@ class Horse:
     def move(self):
         steps = self.dice.roll()
         self.x_pos += steps
-        try:
-            self.image.move(steps, 0)
-        except:
-            pass
-        return steps
+        self.image.move(steps, 0)
+
 
     def crossed_finish_line(self, finish_x):
         return self.x_pos >= finish_x
